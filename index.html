@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Serviço de Mensagens</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Serviço de Mensagens</h1>
+    <form id="form-message">
+      <label for="input-message">Mensagem:</label>
+      <input type="text" id="input-message" name="message">
+      <button type="submit">Enviar</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Mensagem</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+      </tbody>
+    </table>
+
+    <script>
+      const form = document.querySelector('#form-message');
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const input = document.querySelector('#input-message');
+        const message = input.value;
+        input.value = '';
+
+        fetch('/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({message})
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error(error));
+      });
+    </script>
+    <script>
+  function renderMessages(messages) {
+    const tbody = document.querySelector('#table-body');
+    tbody.innerHTML = '';
+    for (const message of messages) {
+      const tr = document.createElement('tr');
+      const tdDate = document.createElement('td');
+      tdDate.textContent = message.date;
+      const tdMessage = document.createElement('td');
+      tdMessage.textContent = message.message;
+      tr.appendChild(tdDate);
+      tr.appendChild(tdMessage);
+      tbody.appendChild(tr);
+    }
+  }
+
+  function fetchMessages() {
+    fetch('/messages')
+    .then(response => response.json())
+    .then(data => renderMessages(data))
+    .catch(error => console.error(error));
+  }
+
+  fetchMessages();
+  setInterval(fetchMessages, 5000);
+</script>
+
+  </body>
+</html>

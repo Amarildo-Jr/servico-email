@@ -1,38 +1,31 @@
-import http.server
 import json
+import http.server
+import socketserver
 
 messages = []
 
-class MessageHandler(http.server.BaseHTTPRequestHandler):
+class RequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/messages':
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            response = {
-                'messages': messages
-            }
-            self.wfile.write(json.dumps(response).encode())
+            self.wfile.write(json.dumps(messages).encode('utf-8'))
         else:
-            self.send_error(404)
-    
-    def do_POST(self):
-        if self.path == '/messages':
-            content_length = int(self.headers['Content-Length'])
-            message_data = json.loads(self.rfile.read(content_length))
-            messages.append(message_data['message'])
-            self.send_response(201)
-            self.send_header('Content-type', 'application/json')
-            self.end_headers()
-            response = {
-                'message': message_data['message']
-            }
-            self.wfile.write(json.dumps(response).encode())
-        else:
-            self.send_error(404)
+            super().do_GET()
 
-if __name__ == '__main__':
-    print('Iniciando servidor...')
-    server_address = ('', 8000)
-    httpd = http.server.HTTPServer(server_address, MessageHandler)
+    def do_POST(self):
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        message = json.loads(post_data.decode('utf-8'))['message']
+        messages.append({'date': '2023-02-22 15:30:00', 'message': message})
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({'success': True}).encode('utf-8'))
+
+PORT = 8000
+
+with socketserver.TCPServer(("", PORT), RequestHandler) as httpd:
+    print(f"Serving at port {PORT}")
     httpd.serve_forever()
