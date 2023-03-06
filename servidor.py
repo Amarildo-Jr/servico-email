@@ -17,7 +17,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            mensagens = db.recuperarMensagensUsuario(username)
+            mensagens = db.recuperarMensagensUsuario(username, "destinatario")
             mensagensPagina = []
             for linha in mensagens:
                 mensagensPagina.append({'data': linha[4], 'mensagem': linha[3], 'remetente': linha[1], 'destinatario': linha[2]})

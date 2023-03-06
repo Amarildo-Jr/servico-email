@@ -83,14 +83,14 @@ function renderMessages(messages) {
   for (const message of messages) {
     const tr = document.createElement('tr');
     const tdDate = document.createElement('td');
-    const tdDestinatario = document.createElement('td');
+    const tdRemetente = document.createElement('td');
     const tdMessage = document.createElement('td');
     tdDate.textContent = message.data;
     tdMessage.textContent = message.mensagem;
-    tdDestinatario.textContent = message.destinatario;
+    tdRemetente.textContent = message.remetente;
     tr.appendChild(tdDate);
     tr.appendChild(tdMessage);
-    tr.appendChild(tdDestinatario);
+    tr.appendChild(tdRemetente);
     tbody.appendChild(tr);
   }
 }

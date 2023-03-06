@@ -18,6 +18,10 @@ def criarTabelas():
 def inserirUsuario(username):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
+    usuario = recuperarUsuario(username)
+    if usuario != []:
+        conn.close()
+        return
     cursor.execute("INSERT INTO usuarios (username) VALUES (?)", (username,))
 
     conn.commit()
@@ -46,6 +50,13 @@ def apagarTodosUsuarios():
     conn.commit()
     conn.close()
 
+def inserirMensagem(remetente, destinatario, mensagem, data):
+    conn = sqlite3.connect('chatTPG.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO mensagens (remetente, destinatario, mensagem, data) VALUES (?, ?, ?, ?)", (remetente, destinatario, mensagem, data))
+    conn.commit()
+    conn.close()
+
 def recuperarMensagens():
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
@@ -54,24 +65,18 @@ def recuperarMensagens():
     conn.close()
     return mensagens
 
-def inserirMensagem(remetente, destinatario, mensagem, data):
+def recuperarMensagensUsuario(usuario, filtro=["remetente", "destinatario", "ambos"]):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO mensagens (remetente, destinatario, mensagem, data) VALUES (?, ?, ?, ?)", (remetente, destinatario, mensagem, data))
-    conn.commit()
-    conn.close()
-
-def recuperarMensagensUsuario(usuario):
-    conn = sqlite3.connect('chatTPG.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM mensagens WHERE remetente = ? OR destinatario = ?', (usuario, usuario))
+    if "remetente" in filtro:
+        cursor.execute('SELECT * FROM mensagens WHERE remetente = ?', (usuario,))
+    if "destinatario" in filtro:
+        cursor.execute('SELECT * FROM mensagens WHERE destinatario = ?', (usuario,))
+    if "ambos" in filtro:
+        cursor.execute('SELECT * FROM mensagens WHERE remetente = ? OR destinatario = ?', (usuario, usuario))
     mensagens = cursor.fetchall()
     conn.close()
-    mensagens_usuario = []
-    for mensagem in mensagens:
-        if mensagem[1] == usuario or mensagem[2] == usuario:
-            mensagens_usuario.append(mensagem)
-    return mensagens_usuario
+    return mensagens
 
 def apagarMensagem(id):
     conn = sqlite3.connect('chatTPG.db')
