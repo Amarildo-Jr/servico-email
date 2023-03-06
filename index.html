@@ -4,11 +4,34 @@
     <meta charset="utf-8">
     <title>Serviço de Mensagens</title>
     <link rel="stylesheet" href="style.css">
+    <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
+    <!-- <div id="loader">
+      <ul id="loading">
+        <li></li>
+        <li></li>
+        <li></li>
+      </ul>
+    </div> -->
+
+    <div id="blur-background" class="blur-background"></div>
+
+    <div id="popup" class="popup">
+      <form id="form-popup">
+        <label for="username">Nome de usuário:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <button type="submit">Entrar</button>
+        <button type="button" onclick="hidePopup()">Cancelar</button>
+      </form>
+    </div>
+
     <h1>Serviço de Mensagens</h1>
     <form id="form-message">
-      <label for="input-message">Mensagem:</label>
+      <label for="input-destino">Destino:</label>
+      <input type="text" id="input-destino" name="message">
+      <label for="input-messagem">Mensagem:</label>
       <input type="text" id="input-message" name="message">
       <button type="submit">Enviar</button>
     </form>
@@ -17,58 +40,11 @@
         <tr>
           <th>Data</th>
           <th>Mensagem</th>
+          <th>Destino</th>
         </tr>
       </thead>
       <tbody id="table-body">
       </tbody>
     </table>
-
-    <script>
-      const form = document.querySelector('#form-message');
-      form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const input = document.querySelector('#input-message');
-        const message = input.value;
-        input.value = '';
-
-        fetch('/messages', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({message})
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));
-      });
-    </script>
-    <script>
-  function renderMessages(messages) {
-    const tbody = document.querySelector('#table-body');
-    tbody.innerHTML = '';
-    for (const message of messages) {
-      const tr = document.createElement('tr');
-      const tdDate = document.createElement('td');
-      tdDate.textContent = message.date;
-      const tdMessage = document.createElement('td');
-      tdMessage.textContent = message.message;
-      tr.appendChild(tdDate);
-      tr.appendChild(tdMessage);
-      tbody.appendChild(tr);
-    }
-  }
-
-  function fetchMessages() {
-    fetch('/messages')
-    .then(response => response.json())
-    .then(data => renderMessages(data))
-    .catch(error => console.error(error));
-  }
-
-  fetchMessages();
-  setInterval(fetchMessages, 5000);
-</script>
-
   </body>
 </html>

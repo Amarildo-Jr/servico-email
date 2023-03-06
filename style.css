@@ -1,6 +1,50 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
 body {
     font-family: sans-serif;
   }
+
+  .blur-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    backdrop-filter: blur(5px);
+    z-index: 1;
+  }
+  
+  .popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 400px;
+    height: 300px;
+    z-index: 2;
+  }
+  
+  .popup label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  
+  .popup input {
+    padding: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .popup button {
+    margin-top: 10px;
+  }
+  
+  
   
   h1 {
     text-align: center;
@@ -24,7 +68,7 @@ body {
     border-radius: 4px;
   }
   
-  button[type="submit"] {
+  #form-message button[type="submit"] {
     background-color: #4CAF50;
     color: white;
     padding: 10px;
