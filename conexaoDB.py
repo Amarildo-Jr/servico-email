@@ -10,8 +10,8 @@ def criarTabelas():
         conn.close()
         return
     cursor.execute("CREATE TABLE usuarios (username TEXT PRIMARY KEY)")
-    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, mensagem TEXT, data TEXT, FOREIGN KEY (remetente) REFERENCES usuarios (username), FOREIGN KEY (destinatario) REFERENCES usuarios (username))")
-    cursor.execute("CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, id_mensagem INTEGER, FOREIGN KEY (id_mensagem) REFERENCES mensagens (id)")
+    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, assunto TEXT, mensagem TEXT, data TEXT, FOREIGN KEY (remetente) REFERENCES usuarios (username), FOREIGN KEY (destinatario) REFERENCES usuarios (username))")
+    cursor.execute("CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, id_mensagem INTEGER, FOREIGN KEY (id_mensagem) REFERENCES mensagens (id))")
     conn.commit()
     conn.close()
 
@@ -50,10 +50,10 @@ def apagarTodosUsuarios():
     conn.commit()
     conn.close()
 
-def inserirMensagem(remetente, destinatario, mensagem, data):
+def inserirMensagem(remetente, destinatario, assunto, mensagem, data):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO mensagens (remetente, destinatario, mensagem, data) VALUES (?, ?, ?, ?)", (remetente, destinatario, mensagem, data))
+    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data) VALUES (?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data))
     conn.commit()
     conn.close()
 

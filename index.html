@@ -7,13 +7,6 @@
     <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
-    <!-- <div id="loader">
-      <ul id="loading">
-        <li></li>
-        <li></li>
-        <li></li>
-      </ul>
-    </div> -->
 
     <div id="blur-background" class="blur-background"></div>
 
@@ -21,7 +14,6 @@
       <form id="form-popup">
         <label for="username">Nome de usuário:</label>
         <input type="text" id="username" name="username" required>
-        <br>
         <button type="submit">Entrar</button>
         <button type="button" onclick="hidePopup()">Cancelar</button>
       </form>
@@ -30,7 +22,9 @@
     <h1>Serviço de Mensagens</h1>
     <form id="form-message">
       <label for="input-destino">Destino:</label>
-      <input type="text" id="input-destino" name="message">
+      <input type="text" id="input-destino" name="destino">
+      <label for="input-assunto">Assunto:</label>
+      <input type="text" id="input-assunto" name="assunto">
       <label for="input-messagem">Mensagem:</label>
       <input type="text" id="input-message" name="message">
       <button type="submit">Enviar</button>

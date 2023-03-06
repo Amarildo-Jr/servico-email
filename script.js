@@ -52,29 +52,32 @@ function submitUsername() {
 
 
 function submitMessage() {
-    const input = document.querySelector('#input-message');
-    const message = input.value;
-    const inputDestino = document.querySelector('#input-destino');
-    const destino = inputDestino.value;
-    input.value = '';
+  const inputDestino = document.querySelector('#input-destino');
+  const destino = inputDestino.value;
+  const inputAssunto = document.querySelector('#input-assunto');
+  const assunto = inputAssunto.value;
+  const input = document.querySelector('#input-message');
+  const message = input.value;
+  input.value = '';
 
-    const mensagemDados = {
-      "remetente": username,
-      "destino": destino,
-      "mensagem": message,
-      "data": new Date()
-    };
+  const mensagemDados = {
+    "remetente": username,
+    "destino": destino,
+    "assunto": assunto,
+    "mensagem": message,
+    "data": new Date()
+  };
 
-    fetch('/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(mensagemDados)
-    })
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
+  fetch('/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(mensagemDados)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
 }
 
 function renderMessages(messages) {
@@ -86,7 +89,7 @@ function renderMessages(messages) {
     const tdRemetente = document.createElement('td');
     const tdMessage = document.createElement('td');
     tdDate.textContent = message.data;
-    tdMessage.textContent = message.mensagem;
+    tdMessage.textContent = message.assunto;
     tdRemetente.textContent = message.remetente;
     tr.appendChild(tdDate);
     tr.appendChild(tdMessage);

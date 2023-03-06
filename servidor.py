@@ -20,7 +20,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             mensagens = db.recuperarMensagensUsuario(username, "destinatario")
             mensagensPagina = []
             for linha in mensagens:
-                mensagensPagina.append({'data': linha[4], 'mensagem': linha[3], 'remetente': linha[1], 'destinatario': linha[2]})
+                mensagensPagina.append({'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2]})
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()
@@ -29,15 +29,16 @@ class RequestHandler(SimpleHTTPRequestHandler):
         if self.path == "/messages":
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
-            messagem = json.loads(post_data.decode('utf-8'))['mensagem']
             remetente = json.loads(post_data.decode('utf-8'))['remetente']
             destinatario = json.loads(post_data.decode('utf-8'))['destino']
+            assunto = json.loads(post_data.decode('utf-8'))['assunto']
+            messagem = json.loads(post_data.decode('utf-8'))['mensagem']
             data_atual = datetime.now().strftime('%d/%m/%Y %H:%M')
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({'success': True}).encode('utf-8'))
-            db.inserirMensagem(remetente, destinatario, messagem, data_atual)
+            db.inserirMensagem(remetente, destinatario, assunto, messagem, data_atual)
         elif self.path == "/username":
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
