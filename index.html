@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <title>Serviço de Mensagens</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-gBqsPOA7VZTUJ1rfN7ELFl8Qx1YzT48TJnI8+Uuwpykjv4E4Z3qoLs8Wn1kw7wYB/Ep1fCxg9XusGrytgMvDQ==" crossorigin="anonymous" />
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
-
     <div id="blur-background" class="blur-background"></div>
 
     <div id="popup" class="popup">
@@ -19,26 +19,71 @@
       </form>
     </div>
 
-    <h1>Serviço de Mensagens</h1>
-    <form id="form-message">
-      <label for="input-destino">Destino:</label>
-      <input type="text" id="input-destino" name="destino">
-      <label for="input-assunto">Assunto:</label>
-      <input type="text" id="input-assunto" name="assunto">
-      <label for="input-messagem">Mensagem:</label>
-      <input type="text" id="input-message" name="message">
-      <button type="submit">Enviar</button>
-    </form>
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Mensagem</th>
-          <th>Remetente</th>
-        </tr>
-      </thead>
-      <tbody id="table-body">
-      </tbody>
-    </table>
+    <div id="painel">
+      <div id="paineis-laterais">
+        <div id="painel-esquerda">
+          <div id="logo">
+            <section id="logo-section">
+              <img src="img/mail.png">
+              <h1>Mail</h1>
+            </section>
+          </div>
+          <div id="opcoes-lateral">
+            <button id="btn-nova-mensagem" onclick="novaMensagem()">Nova mensagem</button>
+            <div id="botoes-lateral">
+              <button id="btn-inbox" class="btn-ativo" onclick="abrirPainelMensagens('inbox')">Inbox</button>
+              <button id="btn-saida" onclick="abrirPainelMensagens('saida')">Saída</button>
+              <button id="btn-spam" onclick="abrirPainelMensagens('spam')">Lixo eletrônico</button>
+              <button id="btn-logout" onclick="logout()">Logout</button>
+            </div>
+          </div>
+        </div>
+        <div id="painel-direita">
+          <div class="painel-topo">
+            <h1 id="boas-vindas"></h1>
+          </div>
+          <table>
+            <tbody id="table-body">
+            </tbody>
+          </table>
+        </div>
+        <div id="painel-mensagem">
+          <div id="painel-topo-acoes">
+            <nav>
+              <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
+              <button id="btn-excluir">Excluir</button>
+              <button id="btn-responder">Responder</button>
+              <button id="btn-encaminhar">Encaminhar</button>
+            </nav>
+          </div>
+          <div id="head-mensagem">
+            <span>
+              <span id="head-origem-destino">
+                <h1 id="head-remetente"></h1>
+                <h1>&rarr;</h1>
+                <h1 id="head-destinatario"></h1>
+              </span>
+              <h1 id="head-data"></h1>
+            </span>
+          </div>
+          <div id="mensagem">
+            <h1 id="head-assunto"></h1>
+            <p id="mensagem-texto"></p>
+          </div>
+        </div>
+        <div id="painel-enviar-mensagem">
+          <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
+          <form id="form-message">
+            <label for="input-destino">Destino:</label>
+            <input type="text" id="input-destino" name="destino">
+            <label for="input-assunto">Assunto:</label>
+            <input type="text" id="input-assunto" name="assunto">
+            <label for="input-messagem">Mensagem:</label>
+            <input type="text" id="input-message" name="message">
+            <button type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

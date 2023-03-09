@@ -10,7 +10,7 @@ def criarTabelas():
         conn.close()
         return
     cursor.execute("CREATE TABLE usuarios (username TEXT PRIMARY KEY)")
-    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, assunto TEXT, mensagem TEXT, data TEXT, FOREIGN KEY (remetente) REFERENCES usuarios (username), FOREIGN KEY (destinatario) REFERENCES usuarios (username))")
+    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, assunto TEXT, mensagem TEXT, data TEXT, lida INTEGER, deletada INTEGER, resposta_id INTEGER, FOREIGN KEY (remetente) REFERENCES usuarios (username), FOREIGN KEY (destinatario) REFERENCES usuarios (username))")
     cursor.execute("CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, id_mensagem INTEGER, FOREIGN KEY (id_mensagem) REFERENCES mensagens (id))")
     conn.commit()
     conn.close()
@@ -53,7 +53,14 @@ def apagarTodosUsuarios():
 def inserirMensagem(remetente, destinatario, assunto, mensagem, data):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data) VALUES (?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data))
+    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, 0))
+    conn.commit()
+    conn.close()
+
+def responderMensagem(id, remetente, destinatario, assunto, mensagem, data):
+    conn = sqlite3.connect('chatTPG.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, id))
     conn.commit()
     conn.close()
 
@@ -64,6 +71,13 @@ def recuperarMensagens():
     mensagens = cursor.fetchall()
     conn.close()
     return mensagens
+
+def marcarMensagemLida(id):
+    conn = sqlite3.connect('chatTPG.db')
+    cursor = conn.cursor()
+    cursor.execute('UPDATE mensagens SET lida = 1 WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
 
 def recuperarMensagensUsuario(usuario, filtro=["remetente", "destinatario", "ambos"]):
     conn = sqlite3.connect('chatTPG.db')

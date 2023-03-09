@@ -14,13 +14,19 @@ class RequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/messages':
             username = self.headers["Username"]
+            recuperacao = self.headers["Painel"]
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
-            mensagens = db.recuperarMensagensUsuario(username, "destinatario")
             mensagensPagina = []
-            for linha in mensagens:
-                mensagensPagina.append({'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2]})
+            if recuperacao ==  "inbox":
+                mensagens = db.recuperarMensagensUsuario(username, "destinatario")
+                for linha in mensagens:
+                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': linha[6]})
+            elif recuperacao == "saida":
+                mensagens = db.recuperarMensagensUsuario(username, "remetente")
+                for linha in mensagens:
+                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': 1})    
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()
@@ -49,6 +55,27 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.send_header('Content-Type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({"username": username}).encode('utf-8'))
+    def do_PUT(self):
+        if self.path == "/messages":
+            content_length = int(self.headers['Content-Length'])
+            put_data = self.rfile.read(content_length)
+            id = json.loads(put_data.decode('utf-8'))['id']
+            db.marcarMensagemLida(id)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+    def do_DELETE(self):
+        if self.path == "/messages":
+            content_length = int(self.headers['Content-Length'])
+            delete_data = self.rfile.read(content_length)
+            id = json.loads(delete_data.decode('utf-8'))['id']
+            db.deletarMensagem(id)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
+
 
 if __name__ == "__main__":
     porta = 8000
