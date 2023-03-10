@@ -22,11 +22,13 @@ class RequestHandler(SimpleHTTPRequestHandler):
             if recuperacao ==  "inbox":
                 mensagens = db.recuperarMensagensUsuario(username, "destinatario")
                 for linha in mensagens:
-                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': linha[6]})
+                    if linha[7] != 2:
+                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]})
             elif recuperacao == "saida":
                 mensagens = db.recuperarMensagensUsuario(username, "remetente")
                 for linha in mensagens:
-                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': 1})    
+                    if linha[7] != 1:
+                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': 1, 'deletada': linha[7], 'resposta_id': linha[8]})    
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()
@@ -70,7 +72,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
             content_length = int(self.headers['Content-Length'])
             delete_data = self.rfile.read(content_length)
             id = json.loads(delete_data.decode('utf-8'))['id']
-            db.deletarMensagem(id)
+            usuario = self.headers["Username"]
+            db.apagarMensagem(id, usuario)
             self.send_response(200)
             self.send_header('Content-Type', 'application/json')
             self.end_headers()

@@ -53,8 +53,16 @@ def apagarTodosUsuarios():
 def inserirMensagem(remetente, destinatario, assunto, mensagem, data):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, 0))
-    conn.commit()
+    cursor.execute("SELECT * FROM usuarios WHERE username = ?", (remetente,))
+    remetente_existe = cursor.fetchone()
+    
+    cursor.execute("SELECT * FROM usuarios WHERE username = ?", (destinatario,))
+    destinatario_existe = cursor.fetchone()
+    if remetente_existe == None or destinatario_existe == None:
+        pass
+    else:
+        cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, 0))
+        conn.commit()
     conn.close()
 
 def responderMensagem(id, remetente, destinatario, assunto, mensagem, data):
@@ -92,10 +100,26 @@ def recuperarMensagensUsuario(usuario, filtro=["remetente", "destinatario", "amb
     conn.close()
     return mensagens
 
-def apagarMensagem(id):
+def apagarMensagem(id, usuario):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute('DELETE FROM mensagens WHERE id = ?', (id,))
+    cursor.execute('SELECT * FROM mensagens WHERE id = ?', (id,))
+    mensagem = cursor.fetchall()
+    # deletada = 1 significa que a mensagem foi deletada pelo remetente
+    # deletada = 2 significa que a mensagem foi deletada pelo destinatário
+    # deletada = 3 significa que a mensagem foi deletada por ambos
+    if mensagem[0][1] == usuario and mensagem[0][2] == usuario:
+        cursor.execute('DELETE FROM mensagens WHERE id = ?', (id,))
+    elif mensagem[0][1] == usuario:
+        if mensagem[0][7] == 0:
+            cursor.execute('UPDATE mensagens SET deletada = 1 WHERE id = ?', (id,))
+        elif mensagem[0][7] == 2:
+            cursor.execute('DELETE FROM mensagens WHERE id = ?', (id,))
+    elif mensagem[0][2] == usuario:
+        if mensagem[0][7] == 0:
+            cursor.execute('UPDATE mensagens SET deletada = 2 WHERE id = ?', (id,))
+        elif mensagem[0][7] == 1:
+            cursor.execute('DELETE FROM mensagens WHERE id = ?', (id,))
     conn.commit()
     conn.close()
 

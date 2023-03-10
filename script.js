@@ -94,7 +94,6 @@ function submitMessage() {
 }
 
 function renderMessages(messages) {
-  console.log(messages)
   const tbody = document.querySelector('#table-body');
   tbody.innerHTML = '';
   for (const message of messages) {
@@ -131,7 +130,6 @@ function renderMessages(messages) {
 }
 
 function fetchMessages() {
-  console.log(painelAtivo)
   fetch('/messages', {
     method: 'GET',
     headers: {
@@ -160,10 +158,15 @@ function abrirPainelMensagens(botaoAtivado) {
   }
 }
 
+let mensagemAtual = null;
+
 function abrirMensagem(mensagem) {
   document.getElementById("painel-enviar-mensagem").style.display = "none";
   document.getElementById("painel-direita").style.width = "32%";
-  painelMensagem = document.getElementById("painel-mensagem")
+  painelMensagem = document.getElementById("painel-mensagem");
+
+  mensagemAtual = mensagem;
+
   painelMensagem.style.display = "flex";
   painelMensagem.style.width = "55%";
   document.getElementById("head-assunto").textContent = mensagem.assunto;
@@ -177,20 +180,21 @@ function abrirMensagem(mensagem) {
   document.getElementById("head-data").textContent = mensagem.data;
   
   document.getElementById("mensagem-texto").textContent = mensagem.mensagem;
-
-  console.log("marcando como lida")
-  // marcar a mensagem como lida
-  fetch('/messages', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Username': username
-    },
-    body: JSON.stringify(mensagem)
-  })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error(error));
+  
+  console.log(painelAtivo, username)
+  if (painelAtivo === "inbox") {
+    fetch('/messages', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Username': username
+      },
+      body: JSON.stringify(mensagem)
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+  }
 }
 
 function fecharMensagem() {
@@ -200,8 +204,35 @@ function fecharMensagem() {
 }
 
 fetchMessages();
-setInterval(fetchMessages, 1000);
+setInterval(fetchMessages, 2000);
 
 function logout() {
   location.reload();
+}
+
+function apagarMensagem() {
+  const modal = document.getElementById("confirm-delete-modal");
+  modal.style.display = "none";
+  fecharMensagem();
+  fetch('/messages', {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      'Username': username,
+    },
+    body: JSON.stringify(mensagemAtual)
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+}
+
+function popupApagarMensagem() {
+  const modal = document.getElementById("confirm-delete-modal");
+  modal.style.display = "block";
+}
+
+function fecharPopupMensagem() {
+  const modal = document.getElementById("confirm-delete-modal");
+  modal.style.display = "none";
 }

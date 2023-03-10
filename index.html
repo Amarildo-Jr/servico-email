@@ -51,7 +51,7 @@
           <div id="painel-topo-acoes">
             <nav>
               <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
-              <button id="btn-excluir">Excluir</button>
+              <button id="btn-excluir" onclick="popupApagarMensagem()">Excluir</button>
               <button id="btn-responder">Responder</button>
               <button id="btn-encaminhar">Encaminhar</button>
             </nav>
@@ -85,5 +85,15 @@
         </div>
       </div>
     </div>
+
+    <div id="confirm-delete-modal" class="modal">
+      <div class="modal-content">
+        <h2>Tem certeza de que deseja excluir esta mensagem?</h2>
+        <p>Esta ação não pode ser desfeita.</p>
+        <button id="confirm-delete-btn" onclick="apagarMensagem()">Excluir</button>
+        <button id="cancel-delete-btn" onclick="fecharPopupMensagem()">Cancelar</button>
+      </div>
+    </div>
+
   </body>
 </html>
