@@ -64,7 +64,7 @@ function novaMensagem() {
   painelEnviarMensagem.style.width = "55%";
 }
 
-function submitMessage() {
+function submitMessage(respostaId = 0) {
   const inputDestino = document.querySelector('#input-destino');
   const destino = inputDestino.value;
   const inputAssunto = document.querySelector('#input-assunto');
@@ -78,7 +78,8 @@ function submitMessage() {
     "destino": destino,
     "assunto": assunto,
     "mensagem": message,
-    "data": new Date()
+    "data": new Date(),
+    "respostaId": respostaId
   };
 
   fetch('/messages', {
@@ -90,7 +91,10 @@ function submitMessage() {
   })
   .then(response => response.json())
   .then(data => console.log(data))
-  .catch(error => console.error(error));
+  .catch(error => {
+    console.log(error.message);
+  });
+  fecharMensagem()
 }
 
 function renderMessages(messages) {
@@ -181,7 +185,6 @@ function abrirMensagem(mensagem) {
   
   document.getElementById("mensagem-texto").textContent = mensagem.mensagem;
   
-  console.log(painelAtivo, username)
   if (painelAtivo === "inbox") {
     fetch('/messages', {
       method: 'PUT',
@@ -235,4 +238,18 @@ function popupApagarMensagem() {
 function fecharPopupMensagem() {
   const modal = document.getElementById("confirm-delete-modal");
   modal.style.display = "none";
+}
+
+function responderMensagem() {
+  document.getElementById("painel-mensagem").style.display = "none";
+  document.getElementById("painel-enviar-mensagem").style.display = "flex";
+  document.getElementById("painel-direita").style.width = "32%";
+  document.getElementById("input-destino").value = mensagemAtual.remetente;
+  document.getElementById("input-destino").disabled = true;
+  document.getElementById("input-destino").style.backgroundColor = "#e4e4e4";
+  if (mensagemAtual.respostaId == 0)  {
+    document.getElementById("input-assunto").value = "Re: " + mensagemAtual.assunto;
+  } else {
+    document.getElementById("input-assunto").value = mensagemAtual.assunto;
+  }
 }

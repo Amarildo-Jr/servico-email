@@ -42,11 +42,14 @@ class RequestHandler(SimpleHTTPRequestHandler):
             assunto = json.loads(post_data.decode('utf-8'))['assunto']
             messagem = json.loads(post_data.decode('utf-8'))['mensagem']
             data_atual = datetime.now().strftime('%d/%m/%Y %H:%M')
-            self.send_response(200)
+            if db.inserirMensagem(remetente, destinatario, assunto, messagem, data_atual):
+                self.send_response(200)
+            else:
+                self.send_response(400)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             self.wfile.write(json.dumps({'success': True}).encode('utf-8'))
-            db.inserirMensagem(remetente, destinatario, assunto, messagem, data_atual)
+
         elif self.path == "/username":
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)

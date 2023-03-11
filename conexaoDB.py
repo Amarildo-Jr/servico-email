@@ -50,7 +50,7 @@ def apagarTodosUsuarios():
     conn.commit()
     conn.close()
 
-def inserirMensagem(remetente, destinatario, assunto, mensagem, data):
+def inserirMensagem(remetente, destinatario, assunto, mensagem, data, resposta_id=0):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM usuarios WHERE username = ?", (remetente,))
@@ -59,18 +59,13 @@ def inserirMensagem(remetente, destinatario, assunto, mensagem, data):
     cursor.execute("SELECT * FROM usuarios WHERE username = ?", (destinatario,))
     destinatario_existe = cursor.fetchone()
     if remetente_existe == None or destinatario_existe == None:
-        pass
+        conn.close()
+        return False
     else:
-        cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, 0))
+        cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, resposta_id))
         conn.commit()
-    conn.close()
-
-def responderMensagem(id, remetente, destinatario, assunto, mensagem, data):
-    conn = sqlite3.connect('chatTPG.db')
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO mensagens (remetente, destinatario, assunto, mensagem, data, lida, deletada, resposta_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (remetente, destinatario, assunto, mensagem, data, 0, 0, id))
-    conn.commit()
-    conn.close()
+        conn.close()
+        return True
 
 def recuperarMensagens():
     conn = sqlite3.connect('chatTPG.db')
