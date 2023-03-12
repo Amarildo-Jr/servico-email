@@ -82,9 +82,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
 
-
 if __name__ == "__main__":
-    porta = 8000
+    porta = 5500
     host = "localhost"
 
     with socketserver.TCPServer((host, porta), RequestHandler, NoCacheHTTPRequestHandler) as httpd:

@@ -100,6 +100,7 @@ function submitMessage(respostaId = 0) {
 function renderMessages(messages) {
   const tbody = document.querySelector('#table-body');
   tbody.innerHTML = '';
+  let quantidadeMensagens = 0;
   for (const message of messages) {
     const tr = document.createElement('tr');
     tr.addEventListener('click', () => {
@@ -119,6 +120,7 @@ function renderMessages(messages) {
     sectionAssunto.id = "table-assunto"
     if(!message.lida) {
       tr.style.fontWeight = "bold";
+      quantidadeMensagens++;
     }
     sectionRemetente.textContent = "@" + message.remetente;
     sectionAssunto.textContent = message.assunto;
@@ -131,6 +133,7 @@ function renderMessages(messages) {
     tr.appendChild(tdVisualizar);
     tbody.appendChild(tr);
   }
+  document.getElementById("quantidade-mensagens").textContent = quantidadeMensagens;
 }
 
 function fetchMessages() {
@@ -207,7 +210,7 @@ function fecharMensagem() {
 }
 
 fetchMessages();
-setInterval(fetchMessages, 2000);
+setInterval(fetchMessages, 3000);
 
 function logout() {
   location.reload();
@@ -252,4 +255,12 @@ function responderMensagem() {
   } else {
     document.getElementById("input-assunto").value = mensagemAtual.assunto;
   }
+}
+
+function encaminharMensagem() {
+  document.getElementById("painel-mensagem").style.display = "none";
+  document.getElementById("painel-enviar-mensagem").style.display = "flex";
+  document.getElementById("painel-direita").style.width = "32%";
+  document.getElementById("input-assunto").value = "Enc: " + mensagemAtual.assunto;
+  document.getElementById("input-mensagem").value = "De: " + mensagemAtual.remetente + "\nPara: " + mensagemAtual.destinatario + "\n" + mensagemAtual.mensagem;
 }

@@ -31,7 +31,7 @@
           <div id="opcoes-lateral">
             <button id="btn-nova-mensagem" onclick="novaMensagem()">Nova mensagem</button>
             <div id="botoes-lateral">
-              <button id="btn-inbox" class="btn-ativo" onclick="abrirPainelMensagens('inbox')">Inbox</button>
+              <button id="btn-inbox" class="btn-ativo" onclick="abrirPainelMensagens('inbox')">Inbox <span id="quantidade-mensagens"></span></button>
               <button id="btn-saida" onclick="abrirPainelMensagens('saida')">Saída</button>
               <button id="btn-spam" onclick="abrirPainelMensagens('spam')">Lixo eletrônico</button>
               <button id="btn-logout" onclick="logout()">Logout</button>
@@ -53,7 +53,7 @@
               <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
               <button id="btn-excluir" onclick="popupApagarMensagem()">Excluir</button>
               <button id="btn-responder" onclick="responderMensagem()">Responder</button>
-              <button id="btn-encaminhar">Encaminhar</button>
+              <button id="btn-encaminhar" onclick="encaminharMensagem()">Encaminhar</button>
             </nav>
           </div>
           <div id="head-mensagem">
@@ -78,8 +78,8 @@
             <input type="text" id="input-destino" name="destino">
             <label for="input-assunto">Assunto:</label>
             <input type="text" id="input-assunto" name="assunto">
-            <label for="input-messagem">Mensagem:</label>
-            <input type="text" id="input-message" name="message">
+            <label for="input-mensagem">Mensagem:</label>
+            <textarea type="text" id="input-mensagem" name="message"></textarea>
             <button type="submit">Enviar</button>
           </form>
         </div>
