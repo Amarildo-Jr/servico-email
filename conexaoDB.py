@@ -9,28 +9,28 @@ def criarTabelas():
     if resultado:
         conn.close()
         return
-    cursor.execute("CREATE TABLE usuarios (username TEXT PRIMARY KEY)")
-    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, assunto TEXT, mensagem TEXT, data TEXT, lida INTEGER, deletada INTEGER, resposta_id INTEGER, FOREIGN KEY (remetente) REFERENCES usuarios (username), FOREIGN KEY (destinatario) REFERENCES usuarios (username))")
+    cursor.execute("CREATE TABLE usuarios (email TEXT PRIMARY KEY, nome TEXT)")
+    cursor.execute("CREATE TABLE mensagens (id INTEGER PRIMARY KEY AUTOINCREMENT, remetente TEXT, destinatario TEXT, assunto TEXT, mensagem TEXT, data TEXT, lida INTEGER, deletada INTEGER, resposta_id INTEGER, FOREIGN KEY (remetente) REFERENCES usuarios (email), FOREIGN KEY (destinatario) REFERENCES usuarios (email))")
     cursor.execute("CREATE TABLE chat (id INTEGER PRIMARY KEY AUTOINCREMENT, id_mensagem INTEGER, FOREIGN KEY (id_mensagem) REFERENCES mensagens (id))")
     conn.commit()
     conn.close()
 
-def inserirUsuario(username):
+def inserirUsuario(email, nome):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    usuario = recuperarUsuario(username)
+    usuario = recuperarUsuario(email)
     if usuario != []:
         conn.close()
         return
-    cursor.execute("INSERT INTO usuarios (username) VALUES (?)", (username,))
+    cursor.execute("INSERT INTO usuarios (email, nome) VALUES (?, ?)", (email, nome,))
 
     conn.commit()
     conn.close()
 
-def recuperarUsuario(username):
+def recuperarUsuario(email):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM usuarios where username = ?', (username,))
+    cursor.execute('SELECT * FROM usuarios where email = ?', (email,))
     usuario = cursor.fetchall()
     conn.close()
     return usuario
@@ -53,10 +53,10 @@ def apagarTodosUsuarios():
 def inserirMensagem(remetente, destinatario, assunto, mensagem, data, resposta_id=0):
     conn = sqlite3.connect('chatTPG.db')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM usuarios WHERE username = ?", (remetente,))
+    cursor.execute("SELECT * FROM usuarios WHERE email = ?", (remetente,))
     remetente_existe = cursor.fetchone()
     
-    cursor.execute("SELECT * FROM usuarios WHERE username = ?", (destinatario,))
+    cursor.execute("SELECT * FROM usuarios WHERE email = ?", (destinatario,))
     destinatario_existe = cursor.fetchone()
     if remetente_existe == None or destinatario_existe == None:
         conn.close()

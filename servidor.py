@@ -23,12 +23,12 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 mensagens = db.recuperarMensagensUsuario(username, "destinatario")
                 for linha in mensagens:
                     if linha[7] != 2:
-                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]})
+                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]})
             elif recuperacao == "saida":
                 mensagens = db.recuperarMensagensUsuario(username, "remetente")
                 for linha in mensagens:
                     if linha[7] != 1:
-                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': linha[1], 'destinatario': linha[2], 'lida': 1, 'deletada': linha[7], 'resposta_id': linha[8]})    
+                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': 1, 'deletada': linha[7], 'resposta_id': linha[8]})    
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()
@@ -50,16 +50,38 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps({'success': True}).encode('utf-8'))
 
-        elif self.path == "/username":
+        elif self.path == "/user":
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
-            username_resposta = json.loads(post_data.decode('utf-8'))['username']
-            username = username_resposta
-            db.inserirUsuario(username)
-            self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
-            self.end_headers()
-            self.wfile.write(json.dumps({"username": username}).encode('utf-8'))
+            login = json.loads(post_data.decode('utf-8'))['login']
+            if(login):
+                user_email = json.loads(post_data.decode('utf-8'))['email']
+                usuario = db.recuperarUsuario(user_email)
+                if usuario != []:
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"email": usuario[0][0], "nome": usuario[0][1]}).encode('utf-8'))
+                else:
+                    self.send_response(404)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"email": user_email}).encode('utf-8'))
+            else:
+                user_email = json.loads(post_data.decode('utf-8'))['email']
+                user_nome = json.loads(post_data.decode('utf-8'))['nome']
+                usuario = db.recuperarUsuario(user_email)
+                if usuario != []:
+                    self.send_response(400)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"email": user_email}).encode('utf-8'))
+                else:
+                    db.inserirUsuario(user_email, user_nome)
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'application/json')
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"email": user_email, "nome": user_nome}).encode('utf-8'))
     def do_PUT(self):
         if self.path == "/messages":
             content_length = int(self.headers['Content-Length'])

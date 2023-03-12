@@ -15,44 +15,114 @@ window.onload = function() {
     });
 }
 
-let username = ""
+function login() {
+  btnLogin = document.getElementById("btn-login")
+  if (!(btnLogin.classList.contains("active"))) {
+    btnLogin.classList.add("active")
+    btnLogin.classList.remove("inactive")
+    btnLogin.classList.remove("underlineHover")
+    let btnCadastrar = document.getElementById("btn-cadastrar")
+    btnCadastrar.classList.add("inactive")
+    btnCadastrar.classList.remove("active")
+    btnCadastrar.classList.add("underlineHover")
+    document.getElementById("nome-sobrenome").style.display = "none"
+    document.getElementById("input-nome").removeAttribute("required")
+    document.getElementById("input-sobrenome").removeAttribute("required")
+    document.getElementById("btn-entrar-cadastrar").textContent = "Entrar"
+    document.getElementById("email-invalido").style.display = "none"
+  }
+}
+
+function cadastrar() {
+  let btnCadastrar = document.getElementById("btn-cadastrar")
+  if (!(btnCadastrar.classList.contains("active"))) {
+    btnCadastrar.classList.add("active")
+    btnCadastrar.classList.remove("inactive")
+    btnCadastrar.classList.remove("underlineHover")
+    let btnLogin = document.getElementById("btn-login")
+    btnLogin.classList.add("inactive")
+    btnLogin.classList.remove("active")
+    btnLogin.classList.add("underlineHover")
+    document.getElementById("nome-sobrenome").style.display = "flex"
+    document.getElementById("input-nome").setAttribute("required", true);
+    document.getElementById("input-sobrenome").setAttribute("required", true);
+    document.getElementById("btn-entrar-cadastrar").textContent = "Cadastrar"
+    document.getElementById("email-invalido").style.display = "none"
+  }
+}
+
+let nomeAtual = ""
+let emailAtual = ""
 
 let painelAtivo = "inbox"
+
+let mensagemAtual = null;
   
 function hidePopup() {
   document.getElementById("blur-background").style.display = "none";
   document.getElementById("popup").style.display = "none";
   
   const input = document.querySelector('#boas-vindas');
-  input.textContent = 'Bem-vindo(a), ' + username + '!';
+  input.textContent = 'Olá, ' + nomeAtual + '!';
 }
 
 function submitUsername() {
-    username = document.getElementById("username").value;
+  let btnCadastrar = document.getElementById("btn-cadastrar")
 
-    if (username !== "") {
-      hidePopup();
-    }   
-
-    fetch('/username', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({username})
+  if (btnCadastrar.classList.contains("active")) {
+    const email = document.getElementById("input-email").value;
+    const nome = document.getElementById("input-nome").value + " " + document.getElementById("input-sobrenome").value;
+    const login = false
+    fetch('/user', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"email": email, "nome": nome, "login": login})
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error("Erro ao enviar formulário.");
+        throw new Error("Usuário já cadastrado");
       }
       return response.json();
     })
     .then(data => {
+      emailAtual = data.email
+      nomeAtual = data.nome
       hidePopup();
     })
     .catch(error => {
-      alert(error.message);
+      const legendaErro = document.getElementById("email-invalido")
+      legendaErro.style.display = "block"
+      legendaErro.textContent = error.message
     });
+  } else {
+    const email = document.getElementById("input-email").value;
+    const login = true
+    fetch('/user', {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"email": email, "login": login})
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Usuário não encontrado");
+      }
+      return response.json();
+    })
+    .then(data => {
+      emailAtual = data.email
+      nomeAtual = data.nome
+      hidePopup();
+    })
+    .catch(error => {
+      const legendaErro = document.getElementById("email-invalido")
+      legendaErro.style.display = "block"
+      legendaErro.textContent = error.message
+    });
+  }
 }
 
 function novaMensagem() {
@@ -65,16 +135,16 @@ function novaMensagem() {
 }
 
 function submitMessage(respostaId = 0) {
-  const inputDestino = document.querySelector('#input-destino');
+  const inputDestino = document.getElementById('input-destino');
   const destino = inputDestino.value;
-  const inputAssunto = document.querySelector('#input-assunto');
+  const inputAssunto = document.getElementById('input-assunto');
   const assunto = inputAssunto.value;
-  const input = document.querySelector('#input-message');
+  const input = document.getElementById('input-mensagem');
   const message = input.value;
   input.value = '';
 
   const mensagemDados = {
-    "remetente": username,
+    "remetente": emailAtual,
     "destino": destino,
     "assunto": assunto,
     "mensagem": message,
@@ -103,8 +173,12 @@ function renderMessages(messages) {
   let quantidadeMensagens = 0;
   for (const message of messages) {
     const tr = document.createElement('tr');
+    if (mensagemAtual != null && message.id == mensagemAtual.id) {
+      tr.classList.add("msg-aberta");
+    }
     tr.addEventListener('click', () => {
       abrirMensagem(message);
+      tr.classList.add("msg-aberta");
     });
     const tdRemetenteAssunto = document.createElement('td');
     tdRemetenteAssunto.id = "table-remetente-assunto"
@@ -115,17 +189,19 @@ function renderMessages(messages) {
     const sectionAssunto = document.createElement('section');
     const tdVisualizar = document.createElement('td');
     tdVisualizar.id = "table-visualizar"
-    const arrowVisualizar = document.createElement('img');
-    arrowVisualizar.src = "img/right-arrow.png"
     sectionAssunto.id = "table-assunto"
     if(!message.lida) {
       tr.style.fontWeight = "bold";
+      tr.style.borderRight = "0.3em solid #00ddff";
       quantidadeMensagens++;
     }
-    sectionRemetente.textContent = "@" + message.remetente;
+    if (painelAtivo == "inbox") {
+      sectionRemetente.textContent = message.remetente[1];
+    } else if(painelAtivo == "saida") {
+      sectionRemetente.textContent = message.destinatario[1];
+    }
     sectionAssunto.textContent = message.assunto;
     tdDate.textContent = message.data;
-    tdVisualizar.appendChild(arrowVisualizar);
     tdRemetenteAssunto.appendChild(sectionRemetente);
     tdRemetenteAssunto.appendChild(sectionAssunto);
     tr.appendChild(tdRemetenteAssunto);
@@ -141,7 +217,7 @@ function fetchMessages() {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Username': username,
+      'Username': emailAtual,
       'Painel': painelAtivo,
     }
   })
@@ -165,24 +241,21 @@ function abrirPainelMensagens(botaoAtivado) {
   }
 }
 
-let mensagemAtual = null;
-
 function abrirMensagem(mensagem) {
   document.getElementById("painel-enviar-mensagem").style.display = "none";
-  document.getElementById("painel-direita").style.width = "32%";
   painelMensagem = document.getElementById("painel-mensagem");
 
+  if(document.getElementsByClassName("msg-aberta")[0] != null) {
+    document.getElementsByClassName("msg-aberta")[0].classList.remove("msg-aberta")
+  }
   mensagemAtual = mensagem;
-
-  painelMensagem.style.display = "flex";
-  painelMensagem.style.width = "55%";
   document.getElementById("head-assunto").textContent = mensagem.assunto;
   if(painelAtivo === "inbox") {
-    document.getElementById("head-remetente").textContent = "@" + mensagem.remetente;
+    document.getElementById("head-remetente").textContent = mensagem.remetente[1];
     document.getElementById("head-destinatario").textContent = "Você";
   } else if(painelAtivo === "saida") {
     document.getElementById("head-remetente").textContent = "Você";
-    document.getElementById("head-destinatario").textContent = "@" + mensagem.destinatario;
+    document.getElementById("head-destinatario").textContent = mensagem.destinatario[1];
   }
   document.getElementById("head-data").textContent = mensagem.data;
   
@@ -193,7 +266,7 @@ function abrirMensagem(mensagem) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
-        'Username': username
+        'Username': emailAtual
       },
       body: JSON.stringify(mensagem)
     })
@@ -224,7 +297,7 @@ function apagarMensagem() {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      'Username': username,
+      'Username': emailAtual,
     },
     body: JSON.stringify(mensagemAtual)
   })

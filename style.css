@@ -31,24 +31,120 @@ header {
   transform: translate(-50%, -50%);
   background-color: #fff;
   border: 1px solid #ccc;
-  padding: 20px;
-  width: 400px;
-  height: 300px;
+  padding: 2%;
+  width: 30%;
+  /* height: 30%; */
   z-index: 2;
 }
 
-.popup label {
+#form-popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+#sign-in-up {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin: 1em;
+}
+
+#sign-in-up button {
+  font-size: 1.3em;
+  margin: 0 1em;
+  text-transform: uppercase;
+  background-color: #ffffff00;
+  border: none;
+}
+
+#sign-in-up button.active {
+  border-bottom: 0.1em solid #7ebcff;
+}
+
+#sign-in-up button.inactive {
+  color: #cccccc;
+}
+
+.underlineHover:after {
   display: block;
-  margin-bottom: 10px;
+  left: 0;
+  bottom: -10px;
+  width: 0;
+  height: 2px;
+  background-color: #56baed;
+  content: "";
+  transition: width 0.2s;
 }
 
-.popup input {
-  padding: 5px;
+.underlineHover:hover {
+  color: #0d0d0d;
+}
+
+.underlineHover:hover:after{
+  width: 100%;
+}
+
+#sign-in-up button:hover {
+  cursor: pointer;
+}
+
+#form-popup label {
+  display: block;
+  margin-bottom: 0.9em;
+  align-self: flex-start;
+}
+
+#nome-sobrenome {
+  width: 100%;
+  padding: 1em;
+  display: none;
+  justify-content: space-between;
+}
+
+#form-popup input {
   border: 1px solid #ccc;
+  padding: 0.7em;
+  margin: 0.5em 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.popup button {
-  margin-top: 10px;
+#input-nome, #input-sobrenome {
+  width: 47%;
+}
+
+#input-nome {
+  align-self: flex-start;
+}
+
+#input-sobrenome {
+  align-self: flex-end;
+}
+
+#input-email {
+  width: 100%;
+}
+
+#email-invalido {
+  display: none;
+  text-align: end;
+  font-size: 0.8em;
+  color: red;
+}
+
+.popup #btn-entrar-cadastrar {
+  width: 30%;
+  padding: 0.8em;
+  border: none;
+  border-radius: 4px;
+  margin: 1.5em 0;
+  background-color: #56baed;
+  color: #fff;
+  font-size: 1em;
+  cursor: pointer;
 }
 
 #painel {
@@ -62,15 +158,9 @@ header {
   left: 0;
 }
 
-.painel-topo {
-  width: 100%;
-  height: 20%;
-  background-color: #800;
-}
-
 #paineis-laterais {
   width: 100%;
-  height: 100%;
+  height: 90%;
   display: flex;
 }
 
@@ -79,7 +169,7 @@ header {
 }
 
 #painel-esquerda {
-  width: 18%;
+  width: 15%;
   background-color: #333;
 }
 
@@ -105,26 +195,29 @@ header {
 }	
 
 #painel-direita {
-  width: 82%;
+  width: 35%;
   background-color: #fff;
 }
 
-#logo-section {
+#logo {
   width: 100%;
   height: 10%;
-  /* margin: 5% 0; */
+  text-decoration: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#logo-section {
+  width: 15%;
+  height: 100%;
+  background-color: #222;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#logo {
-  text-decoration: none;
-}
-
 #logo #logo-section:hover {
-  transform: scale(1.05);
-  transition: 0.5s;
   cursor: pointer;
 }
 
@@ -136,9 +229,22 @@ header {
   -webkit-background-clip: text;
 }
 
+#section-boas-vindas {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #222;
+}
+
+#section-boas-vindas > h1 {
+  padding-left: 1em;
+}
+
 #opcoes-lateral {
   width: 100%;
-  height: 90%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -179,7 +285,10 @@ header {
   color: #fff;
   font-size: 1.3em;
   cursor: pointer;
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.7em;
 }
 
 .btn-ativo {
@@ -219,16 +328,7 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 10px;
-  box-sizing: border-box;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-#input-mensagem {
+#form-message input[type="text"], #form-message input[type="email"], #input-mensagem {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
@@ -256,7 +356,8 @@ table {
 }
 
 table tr {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 0.1em solid #ddd;
+  border-right: 0.3em solid #777;
   display: flex;
   justify-content: space-between;
 }
@@ -286,6 +387,12 @@ table td, table th {
   opacity: 0.5;
 }
 
+.msg-aberta {
+  background-color: #ddd;
+  font-weight: normal;
+  border-right: 0.3em solid #777;
+}
+
 table tr:hover {
   background-color: #ddd;
   cursor: pointer;
@@ -299,10 +406,6 @@ table tr:hover #table-visualizar {
   font-size: 1.2em;
 }
 
-#table-assunto {
-  margin-left: 2%;
-}
-
 #painel-topo-acoes {
   width: 100%;
   height: 7%;
@@ -314,7 +417,6 @@ table tr:hover #table-visualizar {
 #painel-mensagem {
   width: 50%;
   height: 100%;
-  display: none;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
@@ -328,11 +430,11 @@ table tr:hover #table-visualizar {
 
 #head-mensagem {
   width: 100%;
-  height: 15%;
+  height: 13%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #ff0000;
+  background-color: #00d9ff;
 }
 
 #mensagem {
@@ -372,8 +474,8 @@ table tr:hover #table-visualizar {
 #head-origem-destino {
   margin-left: 2%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  width: 45%;
   background-color: #0000ff;
 }
 
