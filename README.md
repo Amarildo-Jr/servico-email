@@ -1,4 +1,4 @@
-# Trabalho Webservice - Serviço de emails
+# Trabalho Webservice - Serviço de email
 
 > Universidade Federal do Piauí - UFPI<br>
 Disciplina: Sistemas Distribuídos<br>
