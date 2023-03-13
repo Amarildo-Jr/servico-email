@@ -1,4 +1,4 @@
-# Trabalho Webservice - Serviço de emails
+# Trabalho Webservice - Serviço de email
 
 > Universidade Federal do Piauí - UFPI<br>
 Disciplina: Sistemas Distribuídos<br>
@@ -29,7 +29,7 @@ git clone https://github.com/Amarildo-Jr/servico-email.git
 python app.py
 ```
 
-Caso não funcione, execute o seguintes comando:
+Caso não funcione, execute o seguinte comando:
 
 ```python
 python servidor.py
