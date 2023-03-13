@@ -12,7 +12,7 @@ Aluno: Amarildo Junior
 
 Para usar essa aplicação basta digitar o seguinte comando no terminal :
 
-```python
+```terminal
 git clone https://github.com/Amarildo-Jr/servico-email.git
 ```
 
@@ -25,13 +25,13 @@ git clone https://github.com/Amarildo-Jr/servico-email.git
 
 ⇒ Após isso basta executar o arquivo app.py. Isso pode ser feito pelo terminal da seguinte maneira (Windows):
 
-```python
+```terminal
 python app.py
 ```
 
 Caso não funcione, execute o seguinte comando:
 
-```python
+```terminal
 python servidor.py
 ```
 
