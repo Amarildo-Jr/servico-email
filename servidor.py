@@ -14,21 +14,15 @@ class RequestHandler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/messages':
             username = self.headers["Username"]
-            recuperacao = self.headers["Painel"]
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.end_headers()
             mensagensPagina = []
-            if recuperacao ==  "inbox":
-                mensagens = db.recuperarMensagensUsuario(username, "destinatario")
-                for linha in mensagens:
-                    if linha[7] != 2:
-                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]})
-            elif recuperacao == "saida":
-                mensagens = db.recuperarMensagensUsuario(username, "remetente")
-                for linha in mensagens:
-                    if linha[7] != 1:
-                        mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': 1, 'deletada': linha[7], 'resposta_id': linha[8]})    
+            mensagens = db.recuperarMensagensUsuario(username, "ambos")
+            mensagens.sort(key=lambda x: x[0], reverse=True)
+            for linha in mensagens:
+                if linha[7] != 2:
+                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]}) 
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()

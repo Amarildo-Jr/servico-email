@@ -7,6 +7,17 @@
     <script type="text/javascript" src="script.js"></script>
   </head>
   <body>
+
+    
+    <div class="cs-loader">
+      <div class="cs-loader-inner">
+        <label>●</label>
+        <label>●</label>
+        <label>●</label>
+        <label>●</label>
+      </div>
+    </div>
+
     <div id="blur-background" class="blur-background"></div>
 
     <div id="popup" class="popup">
@@ -36,6 +47,7 @@
         </section>
         <section id="section-boas-vindas">
           <h1 id="boas-vindas"></h1>
+          <h2 id="email-usuario"></h2>
         </section>
       </div>
       <div id="paineis-laterais">
@@ -59,17 +71,17 @@
         <div id="painel-mensagem">
           <div id="painel-topo-acoes">
             <nav>
-              <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
-              <button id="btn-excluir" onclick="popupApagarMensagem()">Excluir</button>
-              <button id="btn-responder" onclick="responderMensagem()">Responder</button>
-              <button id="btn-encaminhar" onclick="encaminharMensagem()">Encaminhar</button>
+              <button class="btn-voltar" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
+              <button id="btn-excluir" onclick="popupApagarMensagem()"><img src="icons/lixeira.png"></button>
+              <button id="btn-responder" onclick="responderMensagem()"><img src="icons/responder.png"></button>
+              <button id="btn-encaminhar" onclick="encaminharMensagem()"><img src="icons/encaminhar.png"></button>
             </nav>
           </div>
           <div id="head-mensagem">
             <span>
               <span id="head-origem-destino">
                 <h1 id="head-remetente"></h1>
-                <h1>&rarr;</h1>
+                <h1>para</h1>
                 <h1 id="head-destinatario"></h1>
               </span>
               <h1 id="head-data"></h1>
@@ -80,15 +92,16 @@
             <p id="mensagem-texto"></p>
           </div>
         </div>
+        <div id="info-abrir-msg">
+          <img id="img-info" src="icons/abrir_email.png">
+          <h1 id="info-header">Selecione uma mensagem para visualizar</h1>
+        </div>
         <div id="painel-enviar-mensagem">
-          <button class="btn-voltar" onclick="fecharMensagem()">Voltar</button>
           <form id="form-message">
-            <label for="input-destino">Destino:</label>
-            <input type="email" id="input-destino" name="destino">
-            <label for="input-assunto">Assunto:</label>
-            <input type="text" id="input-assunto" name="assunto">
-            <label for="input-mensagem">Mensagem:</label>
-            <textarea type="text" id="input-mensagem" name="message"></textarea>
+            <button class="btn-voltarr" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
+            <input type="email" id="input-destino" name="destino" placeholder="destinatario@mail.com">
+            <input type="text" id="input-assunto" name="assunto" placeholder="Assunto da Mensagem">
+            <textarea type="text" id="input-mensagem" name="message" placeholder="Mensagem..."></textarea>
             <button type="submit">Enviar</button>
           </form>
         </div>

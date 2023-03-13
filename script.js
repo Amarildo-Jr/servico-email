@@ -62,15 +62,17 @@ function hidePopup() {
   document.getElementById("blur-background").style.display = "none";
   document.getElementById("popup").style.display = "none";
   
-  const input = document.querySelector('#boas-vindas');
-  input.textContent = 'Olá, ' + nomeAtual + '!';
+  const perfilNome = document.querySelector('#boas-vindas');
+  perfilNome.textContent = 'Olá, ' + nomeAtual + '!';
+  const perfilEmail = document.querySelector('#email-usuario');
+  perfilEmail.textContent = emailAtual;
 }
 
 function submitUsername() {
   let btnCadastrar = document.getElementById("btn-cadastrar")
 
   if (btnCadastrar.classList.contains("active")) {
-    const email = document.getElementById("input-email").value;
+    const email = document.getElementById("input-email").value.toLowerCase();
     const nome = document.getElementById("input-nome").value + " " + document.getElementById("input-sobrenome").value;
     const login = false
     fetch('/user', {
@@ -97,7 +99,7 @@ function submitUsername() {
       legendaErro.textContent = error.message
     });
   } else {
-    const email = document.getElementById("input-email").value;
+    const email = document.getElementById("input-email").value.toLowerCase();
     const login = true
     fetch('/user', {
       method: 'POST',
@@ -123,15 +125,16 @@ function submitUsername() {
       legendaErro.textContent = error.message
     });
   }
+  
+  ativarLoader()
 }
 
 function novaMensagem() {
-  document.getElementById("painel-direita").style.width = "32%";
   document.getElementById("painel-mensagem").style.display = "none";
-  painelEnviarMensagem = document.getElementById("painel-enviar-mensagem");
-
-  painelEnviarMensagem.style.display = "flex";
-  painelEnviarMensagem.style.width = "55%";
+  document.getElementById("painel-enviar-mensagem").style.display = "flex";
+  document.getElementById("info-abrir-msg").style.display = "none";
+  document.getElementById("input-destino").disabled = false;
+  document.getElementById("input-destino").style.backgroundColor = "#f0f6fc";
 }
 
 function submitMessage(respostaId = 0) {
@@ -170,6 +173,7 @@ function submitMessage(respostaId = 0) {
 function renderMessages(messages) {
   const tbody = document.querySelector('#table-body');
   tbody.innerHTML = '';
+  let quantidadeMensagensNaoLidas = 0;
   let quantidadeMensagens = 0;
   for (const message of messages) {
     const tr = document.createElement('tr');
@@ -190,10 +194,10 @@ function renderMessages(messages) {
     const tdVisualizar = document.createElement('td');
     tdVisualizar.id = "table-visualizar"
     sectionAssunto.id = "table-assunto"
-    if(!message.lida) {
+    if(!message.lida && message.destinatario[0] === emailAtual) {
       tr.style.fontWeight = "bold";
-      tr.style.borderRight = "0.3em solid #00ddff";
-      quantidadeMensagens++;
+      tr.style.borderRight = "0.3em solid #60A5FA";
+      quantidadeMensagensNaoLidas++;
     }
     if (painelAtivo == "inbox") {
       sectionRemetente.textContent = message.remetente[1];
@@ -204,12 +208,28 @@ function renderMessages(messages) {
     tdDate.textContent = message.data;
     tdRemetenteAssunto.appendChild(sectionRemetente);
     tdRemetenteAssunto.appendChild(sectionAssunto);
-    tr.appendChild(tdRemetenteAssunto);
-    tr.appendChild(tdDate);
-    tr.appendChild(tdVisualizar);
-    tbody.appendChild(tr);
+    if(message.destinatario[0] === emailAtual && painelAtivo === "inbox") {
+      tr.appendChild(tdDate);
+      tr.appendChild(tdRemetenteAssunto);
+      tr.appendChild(tdVisualizar);
+      tbody.appendChild(tr);
+      quantidadeMensagens++;
+    } else if (message.remetente[0] === emailAtual && painelAtivo === "saida") {
+      tr.appendChild(tdDate);
+      tr.appendChild(tdRemetenteAssunto);
+      tr.appendChild(tdVisualizar);
+      tbody.appendChild(tr);
+      quantidadeMensagens++;
+    } 
   }
-  document.getElementById("quantidade-mensagens").textContent = quantidadeMensagens;
+  document.getElementById("quantidade-mensagens").textContent = quantidadeMensagensNaoLidas;
+  if (quantidadeMensagens === 0) {
+    document.getElementById("img-info").src = "icons/vazio.png";
+    document.getElementById("info-header").textContent = "Nenhuma mensagem encontrada";
+  } else {
+    document.getElementById("img-info").src = "icons/abrir_email.png";
+    document.getElementById("info-header").textContent = "Selecione uma mensagem para visualizar";
+  }
 }
 
 function fetchMessages() {
@@ -228,7 +248,7 @@ function fetchMessages() {
 
 let primeiraVerificacao = true;
 function abrirPainelMensagens(botaoAtivado) {
-    document.getElementsByClassName("btn-ativo")[0].classList.remove("btn-ativo");
+  document.getElementsByClassName("btn-ativo")[0].classList.remove("btn-ativo");
   if (botaoAtivado === "inbox") {
     painelAtivo = "inbox"
     document.getElementById("btn-inbox").classList.add("btn-ativo");
@@ -242,7 +262,9 @@ function abrirPainelMensagens(botaoAtivado) {
 }
 
 function abrirMensagem(mensagem) {
+  document.getElementById("info-abrir-msg").style.display = "none";
   document.getElementById("painel-enviar-mensagem").style.display = "none";
+  document.getElementById("painel-mensagem").style.display = "flex";
   painelMensagem = document.getElementById("painel-mensagem");
 
   if(document.getElementsByClassName("msg-aberta")[0] != null) {
@@ -279,11 +301,13 @@ function abrirMensagem(mensagem) {
 function fecharMensagem() {
   document.getElementById("painel-mensagem").style.display = "none";
   document.getElementById("painel-enviar-mensagem").style.display = "none";
-  document.getElementById("painel-direita").style.width = "82%";
+  document.getElementById("info-abrir-msg").style.display = "flex";
+  document.getElementById("input-destino").disabled = false;
+  document.getElementById("input-destino").style.backgroundColor = "#f0f6fc";
 }
 
 fetchMessages();
-setInterval(fetchMessages, 3000);
+setInterval(fetchMessages, 1000);
 
 function logout() {
   location.reload();
@@ -317,10 +341,10 @@ function fecharPopupMensagem() {
 }
 
 function responderMensagem() {
+  document.getElementById("info-abrir-msg").style.display = "none";
   document.getElementById("painel-mensagem").style.display = "none";
   document.getElementById("painel-enviar-mensagem").style.display = "flex";
-  document.getElementById("painel-direita").style.width = "32%";
-  document.getElementById("input-destino").value = mensagemAtual.remetente;
+  document.getElementById("input-destino").value = mensagemAtual.remetente[0];
   document.getElementById("input-destino").disabled = true;
   document.getElementById("input-destino").style.backgroundColor = "#e4e4e4";
   if (mensagemAtual.respostaId == 0)  {
@@ -331,9 +355,18 @@ function responderMensagem() {
 }
 
 function encaminharMensagem() {
+  document.getElementById("info-abrir-msg").style.display = "none";
   document.getElementById("painel-mensagem").style.display = "none";
   document.getElementById("painel-enviar-mensagem").style.display = "flex";
-  document.getElementById("painel-direita").style.width = "32%";
   document.getElementById("input-assunto").value = "Enc: " + mensagemAtual.assunto;
-  document.getElementById("input-mensagem").value = "De: " + mensagemAtual.remetente + "\nPara: " + mensagemAtual.destinatario + "\n" + mensagemAtual.mensagem;
+  document.getElementById("input-destino").disabled = false;
+  document.getElementById("input-destino").style.backgroundColor = "#f0f6fc";
+  document.getElementById("input-mensagem").value = "De: " + mensagemAtual.remetente[1] + "\n " + mensagemAtual.remetente[0] + "\nPara: " + mensagemAtual.destinatario[1] + "\n " + mensagemAtual.destinatario[0] + "\n" + mensagemAtual.mensagem;
+}
+
+function ativarLoader() {
+  document.getElementsByClassName("cs-loader")[0].style.display = "block";
+  setTimeout(function() {
+    document.getElementsByClassName("cs-loader")[0].style.display = "none";
+  }, 2500);
 }
