@@ -2,10 +2,10 @@ import subprocess
 import webbrowser
 import conexaoDB as db
 
-# define a porta que você deseja limpar o cache
 port = 5050
 
 db.criarTabelas()
+db.inserirUsuario("naoresponda@mail.com", "AJR Mail")
 
-webbrowser.open('http://localhost:5500/index.html')
+webbrowser.open('http://localhost:5055/index.html')
 subprocess.run(['python', 'servidor.py'])

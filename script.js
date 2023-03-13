@@ -84,7 +84,13 @@ function submitUsername() {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error("Usuário já cadastrado");
+        if (response.status == 400) {
+          throw new Error("Usuário já cadastrado");
+        } else if (response.status == 500) {
+          throw new Error("Erro interno do servidor");
+        } else {
+          throw new Error("Erro desconhecido");
+        }
       }
       return response.json();
     })
@@ -110,7 +116,15 @@ function submitUsername() {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error("Usuário não encontrado");
+        if (response.status == 404) {
+          throw new Error("Usuário não encontrado");
+        } else if (response.status == 500) {
+          throw new Error("Erro interno do servidor");
+        } else if (response.status == 400) {
+          throw new Error("Erro na requisição");
+        } else {
+          throw new Error("Erro desconhecido. Verifique o status do servidor.");
+        }
       }
       return response.json();
     })
@@ -162,10 +176,22 @@ function submitMessage(respostaId = 0) {
     },
     body: JSON.stringify(mensagemDados)
   })
-  .then(response => response.json())
+  .then(response => {
+    if (!response.ok) {
+      if (response.status == 400) {
+        throw new Error("Erro na requisição");
+      } else if (response.status == 500) {
+        throw new Error("Erro interno do servidor");
+      } else if (response.status == 404) {
+        throw new Error("Usuário não encontrado");
+      } else {
+        throw new Error("Erro desconhecido");
+      }
+  }
+  return response.json();})
   .then(data => console.log(data))
   .catch(error => {
-    console.log(error.message);
+    alert(error.message);
   });
   fecharMensagem()
 }
@@ -194,7 +220,7 @@ function renderMessages(messages) {
     const tdVisualizar = document.createElement('td');
     tdVisualizar.id = "table-visualizar"
     sectionAssunto.id = "table-assunto"
-    if(!message.lida && message.destinatario[0] === emailAtual) {
+    if(!message.lida && message.destinatario[0] === emailAtual.toLowerCase()) {
       tr.style.fontWeight = "bold";
       tr.style.borderRight = "0.3em solid #60A5FA";
       quantidadeMensagensNaoLidas++;
@@ -208,13 +234,13 @@ function renderMessages(messages) {
     tdDate.textContent = message.data;
     tdRemetenteAssunto.appendChild(sectionRemetente);
     tdRemetenteAssunto.appendChild(sectionAssunto);
-    if(message.destinatario[0] === emailAtual && painelAtivo === "inbox") {
+    if(message.destinatario[0] === emailAtual && painelAtivo === "inbox" && message.deletada != 2) {
       tr.appendChild(tdDate);
       tr.appendChild(tdRemetenteAssunto);
       tr.appendChild(tdVisualizar);
       tbody.appendChild(tr);
       quantidadeMensagens++;
-    } else if (message.remetente[0] === emailAtual && painelAtivo === "saida") {
+    } else if (message.remetente[0] === emailAtual && painelAtivo === "saida" && message.deletada != 1) {
       tr.appendChild(tdDate);
       tr.appendChild(tdRemetenteAssunto);
       tr.appendChild(tdVisualizar);
@@ -259,6 +285,7 @@ function abrirPainelMensagens(botaoAtivado) {
     painelAtivo = "spam"
     document.getElementById("btn-spam").classList.add("btn-ativo");
   }
+  fecharMensagem();
 }
 
 function abrirMensagem(mensagem) {
@@ -298,12 +325,19 @@ function abrirMensagem(mensagem) {
   }
 }
 
+function limparCampos() {
+  document.getElementById("input-destino").value = "";
+  document.getElementById("input-assunto").value = "";
+  document.getElementById("input-mensagem").value = "";
+}
+
 function fecharMensagem() {
   document.getElementById("painel-mensagem").style.display = "none";
   document.getElementById("painel-enviar-mensagem").style.display = "none";
   document.getElementById("info-abrir-msg").style.display = "flex";
   document.getElementById("input-destino").disabled = false;
   document.getElementById("input-destino").style.backgroundColor = "#f0f6fc";
+  limparCampos();
 }
 
 fetchMessages();
@@ -347,7 +381,7 @@ function responderMensagem() {
   document.getElementById("input-destino").value = mensagemAtual.remetente[0];
   document.getElementById("input-destino").disabled = true;
   document.getElementById("input-destino").style.backgroundColor = "#e4e4e4";
-  if (mensagemAtual.respostaId == 0)  {
+  if (!mensagemAtual.assunto.includes("Re: "))  {
     document.getElementById("input-assunto").value = "Re: " + mensagemAtual.assunto;
   } else {
     document.getElementById("input-assunto").value = mensagemAtual.assunto;

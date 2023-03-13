@@ -12,27 +12,28 @@ Aluno: Amarildo Junior
 
 Para usar essa aplicação basta digitar o seguinte comando no terminal :
 
-```python
+```
 git clone https://github.com/Amarildo-Jr/servico-email.git
 ```
 
-⇒ É necessário ter o git instalado, além do Python versão 3, contendo as seguintes bibliotecas:
+⇒ É necessário ter o git instalado, além do Python versão 3, contendo as seguintes bibliotecas (padrão do Python):
 
 - http.server
 - json
+- datetime
 - sqlite3
 - socketserver
 
 ⇒ Após isso basta executar o arquivo app.py. Isso pode ser feito pelo terminal da seguinte maneira (Windows):
 
-```python
+```
 python app.py
 ```
 
 Caso não funcione, execute o seguinte comando:
 
-```python
+```
 python servidor.py
 ```
 
-E abra em uma aba do navegador o seguinte endereço: [http://localhost:5500/index.html](http://localhost:5500/index.html)
+E abra em uma aba do navegador o seguinte endereço: [http://localhost:5055/index.html](http://localhost:5055/index.html)

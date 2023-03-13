@@ -21,8 +21,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             mensagens = db.recuperarMensagensUsuario(username, "ambos")
             mensagens.sort(key=lambda x: x[0], reverse=True)
             for linha in mensagens:
-                if linha[7] != 2:
-                    mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]}) 
+                mensagensPagina.append({'id': linha[0],'data': linha[5], 'assunto': linha[3], 'mensagem': linha[4], 'remetente': db.recuperarUsuario(linha[1])[0], 'destinatario': db.recuperarUsuario(linha[2])[0], 'lida': linha[6], 'deletada': linha[7], 'resposta_id': linha[8]}) 
             self.wfile.write(json.dumps(mensagensPagina).encode('utf-8'))
         else:
             super().do_GET()
@@ -38,6 +37,8 @@ class RequestHandler(SimpleHTTPRequestHandler):
             data_atual = datetime.now().strftime('%d/%m/%Y %H:%M')
             if db.inserirMensagem(remetente, destinatario, assunto, messagem, data_atual):
                 self.send_response(200)
+            elif db.recuperarUsuario(destinatario) == []:
+                self.send_response(404)
             else:
                 self.send_response(400)
             self.send_header('Content-type', 'application/json')
@@ -76,6 +77,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     self.send_header('Content-Type', 'application/json')
                     self.end_headers()
                     self.wfile.write(json.dumps({"email": user_email, "nome": user_nome}).encode('utf-8'))
+                    db.inserirMensagem("naoresponda@mail.com", user_email, "Bem-vindo(a) ao AJR Mail", f"Olá, {user_nome}! Seja bem-vindo(a) ao AJR Mail, o melhor serviço de e-mail do mundo (ao menos tentamos ser). \nEsperamos que se divirta no processo e aproveite a nova era da comunicação! \n\nAté logo!", datetime.now().strftime('%d/%m/%Y %H:%M'))
     def do_PUT(self):
         if self.path == "/messages":
             content_length = int(self.headers['Content-Length'])
@@ -99,7 +101,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
             self.wfile.write(json.dumps({"success": True}).encode('utf-8'))
 
 if __name__ == "__main__":
-    porta = 5500
+    porta = 5055
     host = "localhost"
 
     with socketserver.TCPServer((host, porta), RequestHandler, NoCacheHTTPRequestHandler) as httpd:

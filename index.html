@@ -57,7 +57,7 @@
               <button id="btn-inbox" class="btn-ativo" onclick="abrirPainelMensagens('inbox')">Inbox <span id="quantidade-mensagens"></span></button>
               <button id="btn-saida" onclick="abrirPainelMensagens('saida')">Saída</button>
               <button id="btn-spam" onclick="abrirPainelMensagens('spam')">Spam</button>
-              <button id="btn-logout" onclick="logout()">Logout</button>
+              <button id="btn-logout" onclick="logout()">Logout<img src="icons/logout.png"></button>
             </div>
           </div>
         </div>
@@ -70,10 +70,10 @@
         <div id="painel-mensagem">
           <div id="painel-topo-acoes">
             <nav>
-              <button class="btn-voltar" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
-              <button id="btn-excluir" onclick="popupApagarMensagem()"><img src="icons/lixeira.png"></button>
-              <button id="btn-responder" onclick="responderMensagem()"><img src="icons/responder.png"></button>
-              <button id="btn-encaminhar" onclick="encaminharMensagem()"><img src="icons/encaminhar.png"></button>
+              <button class="btn-voltar" title="Voltar" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
+              <button id="btn-excluir" title="Excluir" onclick="popupApagarMensagem()"><img src="icons/lixeira.png"></button>
+              <button id="btn-responder" title="Responder" onclick="responderMensagem()"><img src="icons/responder.png"></button>
+              <button id="btn-encaminhar" title="Encaminhar" onclick="encaminharMensagem()"><img src="icons/encaminhar.png"></button>
             </nav>
           </div>
           <div id="head-mensagem">
@@ -92,12 +92,12 @@
           </div>
         </div>
         <div id="info-abrir-msg">
-          <img id="img-info" src="icons/abrir_email.png">
-          <h1 id="info-header">Selecione uma mensagem para visualizar</h1>
+          <img id="img-info" src="icons/vazio.png">
+          <h1 id="info-header">Nenhuma mensagem encontrada</h1>
         </div>
         <div id="painel-enviar-mensagem">
           <form id="form-message">
-            <button class="btn-voltarr" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
+            <button class="btn-voltarr" type="button" title="Voltar" onclick="fecharMensagem()"><img src="icons/voltar.png"></button>
             <input type="email" id="input-destino" name="destino" placeholder="destinatario@mail.com">
             <input type="text" id="input-assunto" name="assunto" placeholder="Assunto da Mensagem">
             <textarea type="text" id="input-mensagem" name="message" placeholder="Mensagem..."></textarea>

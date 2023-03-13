@@ -1,7 +1,7 @@
 import sqlite3
 
 def criarTabelas():
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
 
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name=?", ("mensagens",))
@@ -16,19 +16,18 @@ def criarTabelas():
     conn.close()
 
 def inserirUsuario(email, nome):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     usuario = recuperarUsuario(email)
     if usuario != []:
         conn.close()
         return
     cursor.execute("INSERT INTO usuarios (email, nome) VALUES (?, ?)", (email, nome,))
-
     conn.commit()
     conn.close()
 
 def recuperarUsuario(email):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM usuarios where email = ?', (email,))
     usuario = cursor.fetchall()
@@ -36,7 +35,7 @@ def recuperarUsuario(email):
     return usuario
 
 def recuperarUsuarios():
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM usuarios')
     usuarios = cursor.fetchall()
@@ -44,14 +43,14 @@ def recuperarUsuarios():
     return usuarios
 
 def apagarTodosUsuarios():
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('DELETE FROM usuarios')
     conn.commit()
     conn.close()
 
 def inserirMensagem(remetente, destinatario, assunto, mensagem, data, resposta_id=0):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM usuarios WHERE email = ?", (remetente,))
     remetente_existe = cursor.fetchone()
@@ -68,7 +67,7 @@ def inserirMensagem(remetente, destinatario, assunto, mensagem, data, resposta_i
         return True
 
 def recuperarMensagens():
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM mensagens')
     mensagens = cursor.fetchall()
@@ -76,14 +75,14 @@ def recuperarMensagens():
     return mensagens
 
 def marcarMensagemLida(id):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('UPDATE mensagens SET lida = 1 WHERE id = ?', (id,))
     conn.commit()
     conn.close()
 
 def recuperarMensagensUsuario(usuario, filtro=["remetente", "destinatario", "ambos"]):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     if "remetente" in filtro:
         cursor.execute('SELECT * FROM mensagens WHERE remetente = ?', (usuario,))
@@ -96,7 +95,7 @@ def recuperarMensagensUsuario(usuario, filtro=["remetente", "destinatario", "amb
     return mensagens
 
 def apagarMensagem(id, usuario):
-    conn = sqlite3.connect('chatTPG.db')
+    conn = sqlite3.connect('email.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM mensagens WHERE id = ?', (id,))
     mensagem = cursor.fetchall()

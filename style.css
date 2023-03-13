@@ -334,6 +334,22 @@ header {
   background-color: #121927ad;
 }
 
+#botoes-lateral button:hover img {
+  opacity: 1;
+}
+
+#botoes-lateral button img {
+  height: 100%;
+  opacity: 0.4;
+}
+
+#botoes-lateral button span {
+  background-image: linear-gradient(#a38eff, #ff76bb);
+  background-clip: text;
+  color: transparent;
+  -webkit-background-clip: text;
+}
+
 h1 {
   text-align: center;
 }
@@ -563,7 +579,7 @@ table tr:hover #table-visualizar {
 }
 
 #head-origem-destino h1 {
-  font-size: 1.2em;
+  font-size: 1.1em;
   margin: 0 2%;
 }
 
